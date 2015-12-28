@@ -3,6 +3,7 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -12,10 +13,12 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
 import controlador.Controller;
@@ -30,8 +33,13 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 	
 	private JButton evaluate;
 	private JButton[] players;
+	private JButton[] random;
 	private JTextField[] orPlayer;
 	private JTextField[] rangopls;
+	private JTextField board;
+	private JTextField deads;
+	private JButton selBrd;
+	private JButton selDed;
 	private String rango;
 	private JTextArea salida;
 	private String out;
@@ -40,8 +48,9 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 	private JButton calcularRanking;
 	private String[] ops = {"Sklansky-Chubukov", "Janda", "Ma", "Rock", "Tight"};
 	private JPanel panel;
-	private String[] nombres = {"UTG", "MP", "CO", "BTN", "SB", "BB"};
-	private boolean[] pulsados = {false, false, false, false, false, false};
+	private String[] nombres = {"Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6"
+								, "Player 7", "Player 8", "Player 9", "Player 10"};
+	private boolean[] pulsados = {false, false, false, false, false, false, false, false, false, false};
 	
 	public PanelOeste(Controller contr) {
 		
@@ -51,16 +60,19 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 		this.controller = contr;
 		
 		JButton player;
+		JButton rand;
 		JTextField rango;
 		JTextField orPlayer;
+		JLabel hand;
+		JLabel equity;
 		StringBuilder namePlayer = new StringBuilder();
 		int tam=0;
 		
-		this.out = new String();
-		this.calcularRanking = new JButton("Ranking");
-		this.players = new JButton[6];
-		this.orPlayer = new JTextField[6];
-		this.rangopls = new JTextField[6];
+		this.out = new String();		
+		this.players = new JButton[10];
+		this.random = new JButton[10];
+		this.orPlayer = new JTextField[10];
+		this.rangopls = new JTextField[10];
 		this.rango = new String();
 		this.comboBoxRanking = new JComboBox<String>(ops);
 		this.comboBoxRanking.setSelectedIndex(0);
@@ -70,47 +82,76 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 		JPanel norte = new JPanel();
 		norte.setLayout(null);
 		
-		for(int i=0; i < 6; i++) {
+		Font font = new Font("RD", 11, 11);
+		
+		hand = new JLabel("<html><strong>Hand Distribution</strong></html>");
+		hand.setBounds(7, 7, 150, 20);
+		hand.setFont(font);
+		
+		equity = new JLabel("<html><strong>Equity</strong></html>");
+		equity.setBounds(279, 7, 70, 20);
+		equity.setFont(font);
+		
+		
+		font = new Font("RD", 8, 8);
+		
+		for(int i=0; i < 10; i++) {
 			
 			namePlayer.append(this.nombres[i]);
 			
 			if(i==0){
-				tam = 10;
+				tam = 30;
 				player = new JButton(namePlayer.toString());
-				player.setBounds(7, tam, 90, 30);
+				player.setBounds(7, tam, 75, 25);
 				player.setMargin(new Insets(1,1,1,1));
+				player.setHorizontalTextPosition(SwingConstants.LEFT);
+				
+				rand = new JButton("<html>R<br>D</html>");
+				rand.setFont(font);
+				rand.setBounds(85, tam, 17, 25);
+				rand.setMargin(new Insets(1,1,1,1));
 				
 				rango = new JTextField();
 				rango.getPreferredSize();
-				rango.setBounds(104, tam, 170, 32);
+				rango.setBounds(104, tam, 170, 26);
 				
-				orPlayer = new JTextField("fold");
-				orPlayer.setBounds(279, tam, 40, 30);
+				orPlayer = new JTextField();
+				orPlayer.setBounds(279, tam, 40, 25);
 				orPlayer.setMargin(new Insets(1,1,1,1));
 			}
 			else {
-				tam+= 35;
+				tam+= 30;
 				player = new JButton(namePlayer.toString());
-				player.setBounds(7, tam, 90, 30);
+				player.setBounds(7, tam, 75, 25);
 				player.setMargin(new Insets(1,1,1,1));
+				player.setHorizontalTextPosition(SwingConstants.LEFT);
+				
+				rand = new JButton("<html>R<br>D</html>");
+				rand.setFont(font);
+				rand.setBounds(85, tam, 17, 25);
+				rand.setMargin(new Insets(1,1,1,1));
 				
 				rango = new JTextField();
 				rango.getPreferredSize();
-				rango.setBounds(104, tam, 170, 32);
+				rango.setBounds(104, tam, 170, 26);
 				
-				orPlayer = new JTextField("fold");
-				orPlayer.setBounds(279, tam, 40, 30);
+				orPlayer = new JTextField();
+				orPlayer.setBounds(279, tam, 40, 25);
 				orPlayer.setMargin(new Insets(1,1,1,1));
 				
 			}
 			
 			this.players[i] = player;
+			this.random[i] = rand;
 			this.rangopls[i] = rango;
 			this.orPlayer[i] = orPlayer;
 			
 			this.players[i].addActionListener(this);
 			
+			norte.add(hand);
+			norte.add(equity);
 			norte.add(player);
+			norte.add(rand);
 			norte.add(rango);
 			norte.add(orPlayer);
 			
@@ -118,17 +159,45 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 			
 		}
 		
+		font = new Font("select", 10, 10);
+		
+		JLabel lbBoard = new JLabel("Board:");
+		lbBoard.setText("Board:");
+		lbBoard.setBounds(340, 110, 70, 20); // x, y, width, height
+		this.board = new JTextField();
+		this.board.setBounds(340, 130, 100, 30);
+		this.board.setMargin(new Insets(1,1,1,1));
+		this.selBrd = new JButton("<html><strong>select</strong></html>");
+		this.selBrd.setHorizontalTextPosition(SwingConstants.CENTER);
+		this.selBrd.setFont(font);
+		this.selBrd.setBounds(442, 130, 40, 29);
+		this.selBrd.setMargin(new Insets(1,1,1,1));
+		
+		JLabel lbDead = new JLabel("Dead Cards:");
+		lbDead.setText("Dead Cards:");
+		lbDead.setBounds(340, 170, 90, 20);
+		this.deads = new JTextField();
+		this.deads.setBounds(340, 190, 100, 30);
+		this.deads.setMargin(new Insets(1,1,1,1));
+		this.selDed = new JButton("<html><strong>select</strong></html>");
+		this.selDed.setHorizontalTextPosition(SwingConstants.CENTER);
+		this.selDed.setFont(font);
+		this.selDed.setBounds(442, 190, 40, 29);
+		this.selDed.setMargin(new Insets(1,1,1,1));
 		
 		
 		this.evaluate = new JButton("Evaluate");
-		this.evaluate.setBounds(350, 200, 100, 30);
+		this.evaluate.setBounds(350, 260, 100, 30);
 		this.evaluate.setMargin(new Insets(1,1,1,1));
 		
-		this.calcularRanking.setBounds(350, 250, 100, 30);
+		this.calcularRanking = new JButton("Ranking");
+		this.calcularRanking.setBounds(350, 295, 100, 30);
 		this.evaluate.setMargin(new Insets(1,1,1,1));
 		
-		this.comboBoxRanking.setBounds(332, 10, 150, 30);
+		this.comboBoxRanking.setBounds(332, 30, 150, 30);
 		
+		this.selBrd.addActionListener(this);
+		this.selDed.addActionListener(this);
 		this.evaluate.addActionListener(this);	
 		this.calcularRanking.addActionListener(this);
 		this.comboBoxRanking.addActionListener (new ActionListener () {
@@ -164,6 +233,13 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 		});
 		
 		
+		
+		norte.add(lbBoard);
+		norte.add(this.board);
+		norte.add(this.selBrd);
+		norte.add(lbDead);
+		norte.add(this.deads);
+		norte.add(this.selDed);
 		norte.add(this.evaluate);
 		norte.add(this.calcularRanking);
 		norte.add(this.comboBoxRanking);
@@ -234,12 +310,10 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 					if(this.pulsados[i] == false) {
 						this.players[i].setBackground(Color.GREEN);
 						this.players[i].setForeground(Color.BLACK);
-//						this.players[i].setEnabled(false);
 						this.pulsados[i] = true;
 					}
 					else {
 						this.pulsados[i] = false;
-//						this.players[i].setEnabled(true);
 						this.players[i].setBackground(Color.gray);
 						this.players[i].setForeground(Color.WHITE);
 					}
@@ -302,22 +376,11 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 
 	@Override
 	public void haySeleccionado(Vector<String> select) {
-		// TODO Auto-generated method stub
-//		boolean pintado = false;
-//		int i=0;
-//		while(i<6 && !pintado) {
-//			if(this.rangopls[i].getText().equals("")) {
-//				this.rangopls[i].setText(select.lastElement());
-//				pintado = true;
-//			}
-//			i++;
-//		}
-//		String cadena = new String();
+
 		StringBuilder cad = new StringBuilder();
 		
 		for (int j = 0; j < 6; j++) {
 			if(this.pulsados[j] == true) {
-//				cadena += select.lastElement();
 				cad.append(this.rangopls[j].getText());
 				if(cad.toString().equals("")) {
 					cad.append(select.lastElement());
