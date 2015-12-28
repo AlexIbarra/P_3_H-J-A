@@ -1,5 +1,6 @@
 package controlador;
 
+import combos.ParserCombos;
 import main.ParserRangos;
 import main.ParserRankings;
 import main.PilaPosiciones;
@@ -12,6 +13,7 @@ public class Controller {
 	
 	private ParserRangos pRangos;
 	private ParserRankings pRankings;
+	private ParserCombos pCombos;
 	private Ranking rankings[];
 	private Ranking rankingActivo;
 	private RankingChubukov rChurukov;
@@ -22,6 +24,7 @@ public class Controller {
 	public Controller() {
 		this.pRangos = new ParserRangos();
 		this.pRankings = new ParserRankings();
+		this.pCombos = new ParserCombos();
 		this.rankings  = new Ranking[5];
 		this.rankings[0] = new RankingChubukov();
 		this.rankings[1] = new RankingJanda();
@@ -33,6 +36,11 @@ public class Controller {
 	}
 	
 	
+	
+	
+	public void parseaCombo(String combo) {
+		System.out.println(this.pCombos.parseaMano(combo).toString());
+	}
 	
 	
 	

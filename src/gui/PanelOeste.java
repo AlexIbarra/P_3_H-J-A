@@ -273,19 +273,41 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		
+		Thread hebra;
+		
+		
 		if(e.getSource() == this.evaluate) {
 			
 			this.out = "";
 			
+			/* La hebra llamara al controlador para que genere las combinaciones */
+			hebra = new Thread(new Runnable(){
+				public void run() {
+//					this.controller.generaCombinaciones();
+//					hebra.interrupt();
+				}
+			});
+			
+			/* Comienzo a generar las combinaciones aleatorias */
+//			hebra.start();
+			
 			for (int i = 0; i < players.length; i++) {
 				
-				
-				if (!this.rangopls[i].getText().equals("")) {
-					this.controller.evaluaRango(this.rangopls[i].getText(),this.players[i].getText(), this.orPlayer[i].getText().toUpperCase());//mano, pos, accion
+				/* Si hay una mano en TextField del jugador */
+				if (!this.rangopls[i].getText().equals("")) { 
+					
+					/* Le paso la mano al parser para evalue el combo correspondiente */
+					this.controller.parseaCombo(this.rangopls[i].getText());
 				}
+				
+				
+//				if (!this.rangopls[i].getText().equals("")) {
+//					this.controller.evaluaRango(this.rangopls[i].getText(),this.players[i].getText(), this.orPlayer[i].getText().toUpperCase());//mano, pos, accion
+//				}
 
 				this.rangopls[i].setText("");
-				this.orPlayer[i].setText("fold");
+				this.orPlayer[i].setText("");
 				this.players[i].setEnabled(true);
 				this.pulsados[i] = false;
 			}

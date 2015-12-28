@@ -1,7 +1,13 @@
 package combos;
 
+import carta.Mano;
+
 public class ParserCombos {
-private static Combos[] combos;
+	
+	
+	private static Combos[] combos;
+	
+	
 	
 	public ParserCombos (){
 		
@@ -11,15 +17,24 @@ private static Combos[] combos;
 		combos[2] = new ComboPareja();		
 	}
 	
-	static public Combos parseaComando(String cadenas){
+	static public Combos parseaMano(String cadenas){
 		
+		int i=0;
+		boolean salir=false;
         Combos c = null;
 		char par [] = cadenas.toCharArray();
-		for(int i=0;i<combos.length;i++){
+		while(i<combos.length && !salir){
         	
-        	if(combos[i].parsea(par)!=null) c = combos[i].parsea(par);
-			
+        	if((c = combos[i].parsea(par)) != null) 
+        		salir =  true;
+			i++;
 		}		
 		return c;
+	}
+	
+	public Mano generaCombinaciones() {
+		
+		
+		return null;
 	}
 }

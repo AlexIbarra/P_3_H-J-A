@@ -6,10 +6,14 @@ import carta.Carta;
 import carta.Combo;
 
 public class ComboOffSuited implements Combos{
+	
+	
 	private ArrayList <Combo> combo = new ArrayList <Combo>();
+	
+	
 	public ComboOffSuited(char num1, char num2)
 	{
-		char[] palos = {'p','h','s','d'};
+		char[] palos = {'c','h','s','d'};
 		Carta carta1;
 		Carta carta2;
 		for(int i = 0; i < 4; i++)
@@ -47,6 +51,11 @@ public class ComboOffSuited implements Combos{
 		}
 			
 		return combo;
+	}
+	
+	
+	public String toString() {
+		return "ComboOffSuited";
 	}
 
 }
