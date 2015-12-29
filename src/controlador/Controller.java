@@ -148,7 +148,7 @@ public class Controller {
 				mano.setMano(new Carta(token[6], token[7]));
 				mano.setMano(new Carta(token[8], token[9]));
 				mano.setMano(new Carta(token[10], token[11]));
-				mano.setMano(new Carta(token[12], token[14]));
+				mano.setMano(new Carta(token[12], token[13]));
 								
 				jugadores.get(i).addMejorMano(this.pJugadas.parse(mano));
 			}
