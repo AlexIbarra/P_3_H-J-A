@@ -134,9 +134,9 @@ public class Controller {
 		/* Calculamos las mejores manos para todas las manos de todos los jugadores */
 		for (int i = 0; i < jugadores.size(); i++) {
 			
-			cont = jugadores.get(i).getContManos();
+			cont = 0;
 			
-			for (int j = 0; j < cont; j++) {
+			for (int j = 0; j < jugadores.get(i).getContManos(); j++) {
 				
 				Mano mano = new Mano();
 				
@@ -151,6 +151,10 @@ public class Controller {
 				mano.setMano(new Carta(token[12], token[13]));
 								
 				jugadores.get(i).addMejorMano(this.pJugadas.parse(mano));
+				
+				System.out.println(jugadores.get(i).getMejoresManos(cont).toString());
+				
+				cont++;
 			}
 			
 		}
