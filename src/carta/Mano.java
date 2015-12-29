@@ -18,6 +18,18 @@ public class Mano {
 		this.mano.add(carta);
 	}
 	
+	public void deleteCarta(String carta) {
+		int i=0;
+		boolean eliminada=false;
+		while (i < mano.size() && !eliminada) {
+			if(mano.get(i).toString().equals(carta)) {
+				mano.remove(i);
+				eliminada = true;
+			}
+			i++;
+		}
+	}
+	
 	public ArrayList<Carta> getMano() {
 		return this.mano;
 	}
@@ -76,7 +88,7 @@ public class Mano {
 		String cadena = new String();
 		for(int i=0; i < this.mano.size(); i++) {
 			/* Concateno Numero + Palo de cada carta de la mano que este usada */
-			if(this.mano.get(i).getUsada() == true)
+//			if(this.mano.get(i).getUsada() == true)
 				cadena += this.mano.get(i).toString();			
 		}
 		return cadena;

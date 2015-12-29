@@ -1,8 +1,19 @@
 package controlador;
 
+import java.util.ArrayList;
+
+import carta.Carta;
+import carta.Combo;
+import carta.Mano;
+import combos.Combos;
 import combos.ParserCombos;
+import jugadores.ComparadorJugadas;
+import jugadores.Jugador;
+import main.ParserJugadas;
+import main.ParserManos;
 import main.ParserRangos;
 import main.ParserRankings;
+import main.PilaManos;
 import main.PilaPosiciones;
 import main.Posicion;
 import observers.RangoObserver;
@@ -13,7 +24,10 @@ public class Controller {
 	
 	private ParserRangos pRangos;
 	private ParserRankings pRankings;
+	private ParserJugadas pJugadas;
+	private ParserManos pManos;
 	private ParserCombos pCombos;
+	private PilaManos pilaManos;
 	private Ranking rankings[];
 	private Ranking rankingActivo;
 	private RankingChubukov rChurukov;
@@ -22,6 +36,9 @@ public class Controller {
 	
 
 	public Controller() {
+		this.pilaManos = new PilaManos();
+		this.pJugadas = new ParserJugadas();
+		this.pManos = new ParserManos();
 		this.pRangos = new ParserRangos();
 		this.pRankings = new ParserRankings();
 		this.pCombos = new ParserCombos();
@@ -38,8 +55,108 @@ public class Controller {
 	
 	
 	
-	public void parseaCombo(String combo) {
-		System.out.println(this.pCombos.parseaMano(combo).toString());
+	public void generaCombinaciones() {
+		
+		for (int i = 0; i < 3; i++) {
+			this.pilaManos.addMano(this.pCombos.generaCombinaciones());
+		}
+	}
+	
+	
+	
+	
+	public void parseaCombo(ArrayList <String> manos) {
+		
+		ArrayList <Combos> combos = new ArrayList <Combos>();
+		ArrayList <Jugador> jugadores = new ArrayList <Jugador>();
+		Combos tmpC;
+		Mano tmpM;
+		Combo combo;
+		int cont=0;
+		char[] token;
+		
+		/* Generamos los combos para todos los jugadores */
+		for (int i = 0; i < manos.size(); i++) {
+		
+			if(!manos.get(i).equals("")) {
+				combos.add(this.pCombos.parseaMano(manos.get(i)));
+				jugadores.add(new Jugador(i));
+			}
+		}
+		
+		
+		/* Para cada mano d ela pila */
+		for (int j = 0; j < pilaManos.size(); j++) {
+			
+			/* Cogemos una mano de la pila */
+			tmpM = this.pilaManos.getMano(j);
+			
+			/* Asigno la pila de jugadas a cada jugador */
+			for (int k = 0; k < jugadores.size(); k++) {
+				
+				/* Combos correspondientes al jugador */
+				tmpC = combos.get(k);
+				
+				/* Segun el numero de combos que tenga el cugador */
+				for (int i = 0; i < tmpC.size(); i++) {
+	
+					/* Cojo el primer combo del array de combos del jugador */
+					combo = tmpC.getCombo(i);
+		
+					/* A cada mano de la pila le añado las cartas del combo */									
+					tmpM.setMano(combo.getCarta1());
+					tmpM.setMano(combo.getCarta2());
+					
+					/* Ordeno la mano */
+					tmpM.ordenaMano(0, tmpM.getMano().size()-1);
+						
+					
+					/* Le asigno la mano a la pila de manos del jugador
+					 * Tendra tantas manos como combos y manos en la pila haya (Total = combos x manos del a pila)
+					 * */
+					jugadores.get(k).addManoPila(tmpM.toString());
+					
+					
+					/* Vuelvo a dejar la mano original leida de la pila */
+					tmpM.deleteCarta(combo.getCarta1().toString());
+					tmpM.deleteCarta(combo.getCarta2().toString());
+					
+					
+//					System.out.println(tmpC.toString() + " " + jugadores.get(k).getManoPila(cont));
+					
+					cont++;
+				}
+
+			}
+		}
+		
+		
+		/* Calculamos las mejores manos para todas las manos de todos los jugadores */
+		for (int i = 0; i < jugadores.size(); i++) {
+			
+			cont = jugadores.get(i).getContManos();
+			
+			for (int j = 0; j < cont; j++) {
+				
+				Mano mano = new Mano();
+				
+				token = jugadores.get(i).getManoPila(j).toCharArray();
+				
+				mano.setMano(new Carta(token[0], token[1]));
+				mano.setMano(new Carta(token[2], token[3]));
+				mano.setMano(new Carta(token[4], token[5]));
+				mano.setMano(new Carta(token[6], token[7]));
+				mano.setMano(new Carta(token[8], token[9]));
+				mano.setMano(new Carta(token[10], token[11]));
+				mano.setMano(new Carta(token[12], token[14]));
+								
+				jugadores.get(i).addMejorMano(this.pJugadas.parse(mano));
+			}
+			
+		}
+		
+		/* Comparamos las mejores jugadas de todos los jugadores */
+
 	}
 	
 	

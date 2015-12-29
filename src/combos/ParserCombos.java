@@ -1,5 +1,6 @@
 package combos;
 
+import carta.Carta;
 import carta.Mano;
 
 public class ParserCombos {
@@ -17,7 +18,7 @@ public class ParserCombos {
 		combos[2] = new ComboPareja();		
 	}
 	
-	static public Combos parseaMano(String cadenas){
+	public Combos parseaMano(String cadenas){
 		
 		int i=0;
 		boolean salir=false;
@@ -32,9 +33,17 @@ public class ParserCombos {
 		return c;
 	}
 	
+	
+	/* Metodo que se encarga de generar manos aleatorias de 5 cartas */
 	public Mano generaCombinaciones() {
 		
+		Mano mano = new Mano();
+		mano.setMano(new Carta('2','h'));
+		mano.setMano(new Carta('3','c'));
+		mano.setMano(new Carta('4','s'));
+		mano.setMano(new Carta('5','h'));
+		mano.setMano(new Carta('6','d'));
 		
-		return null;
+		return mano;
 	}
 }

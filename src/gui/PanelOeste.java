@@ -2,13 +2,12 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -22,19 +21,18 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
 import controlador.Controller;
-import jugadores.Jugador;
 import main.PilaPosiciones;
-import observers.RangoObserver;
 import observers.RankingObserver;
 
-public class PanelOeste extends JPanel implements ActionListener, RankingObserver {
+
+public class PanelOeste extends JPanel implements RankingObserver {
 	
 	private static final long serialVersionUID = 1L;
 	
 	private JButton evaluate;
 	private JButton[] players;
 	private JButton[] random;
-	private JTextField[] orPlayer;
+	private JTextField[] tfEquity;
 	private JTextField[] rangopls;
 	private JTextField board;
 	private JTextField deads;
@@ -59,6 +57,8 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 		this.panel = this;
 		this.controller = contr;
 		
+		OyenteBoton oyente = new OyenteBoton();
+		
 		JButton player;
 		JButton rand;
 		JTextField rango;
@@ -71,7 +71,7 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 		this.out = new String();		
 		this.players = new JButton[10];
 		this.random = new JButton[10];
-		this.orPlayer = new JTextField[10];
+		this.tfEquity = new JTextField[10];
 		this.rangopls = new JTextField[10];
 		this.rango = new String();
 		this.comboBoxRanking = new JComboBox<String>(ops);
@@ -144,9 +144,9 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 			this.players[i] = player;
 			this.random[i] = rand;
 			this.rangopls[i] = rango;
-			this.orPlayer[i] = orPlayer;
+			this.tfEquity[i] = orPlayer;
 			
-			this.players[i].addActionListener(this);
+			this.players[i].addActionListener(oyente);
 			
 			norte.add(hand);
 			norte.add(equity);
@@ -196,12 +196,12 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 		
 		this.comboBoxRanking.setBounds(332, 30, 150, 30);
 		
-		this.selBrd.addActionListener(this);
-		this.selDed.addActionListener(this);
-		this.evaluate.addActionListener(this);	
-		this.calcularRanking.addActionListener(this);
+		this.selBrd.addActionListener(oyente);
+		this.selDed.addActionListener(oyente);
+		this.evaluate.addActionListener(oyente);	
+		this.calcularRanking.addActionListener(oyente);
 		this.comboBoxRanking.addActionListener (new ActionListener () {
-		    public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {
 		    	
 		    	JComboBox<String> aux;
 				
@@ -243,8 +243,6 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 		norte.add(this.evaluate);
 		norte.add(this.calcularRanking);
 		norte.add(this.comboBoxRanking);
-		
-		
 		this.add(norte);
 		
 		JPanel sur = new JPanel();
@@ -268,92 +266,75 @@ public class PanelOeste extends JPanel implements ActionListener, RankingObserve
 
 	
 	
+	private class OyenteBoton implements ActionListener {
 	
-	
-	@Override
-	public void actionPerformed(ActionEvent e) {
+		@Override
+		public void actionPerformed(ActionEvent e) {
 		
 		
-		Thread hebra;
 		
-		
-		if(e.getSource() == this.evaluate) {
+			ArrayList <String> manos = new ArrayList<String>();
 			
-			this.out = "";
 			
-			/* La hebra llamara al controlador para que genere las combinaciones */
-			hebra = new Thread(new Runnable(){
-				public void run() {
-//					this.controller.generaCombinaciones();
-//					hebra.interrupt();
-				}
-			});
-			
-			/* Comienzo a generar las combinaciones aleatorias */
-//			hebra.start();
-			
-			for (int i = 0; i < players.length; i++) {
+			if(e.getSource() == evaluate) {
 				
-				/* Si hay una mano en TextField del jugador */
-				if (!this.rangopls[i].getText().equals("")) { 
+				out = "";	
+				
+				controller.generaCombinaciones();
+				
+				for (int i = 0; i < players.length; i++) {
 					
-					/* Le paso la mano al parser para evalue el combo correspondiente */
-					this.controller.parseaCombo(this.rangopls[i].getText());
+					/* Si hay una mano en TextField del jugador */
+//					if (!rangopls[i].getText().equals("")) { 
+						manos.add(rangopls[i].getText());					
+//					}
+	
+					rangopls[i].setText("");
+					players[i].setEnabled(true);
+					pulsados[i] = false;
 				}
 				
 				
-//				if (!this.rangopls[i].getText().equals("")) {
-//					this.controller.evaluaRango(this.rangopls[i].getText(),this.players[i].getText(), this.orPlayer[i].getText().toUpperCase());//mano, pos, accion
-//				}
-
-				this.rangopls[i].setText("");
-				this.orPlayer[i].setText("");
-				this.players[i].setEnabled(true);
-				this.pulsados[i] = false;
+				/* Le paso la mano al parser para evalue el combo correspondiente */
+				controller.parseaCombo(manos);
+				
+				controller.cleanGrid();
 			}
-			
-			this.controller.cleanGrid();
-		}
-		else if(e.getSource() == this.calcularRanking) {
+			else if(e.getSource() == calcularRanking) {
+				for (int i = 0; i < players.length; i++) {
+					try {
+						rango = rangopls[i].getText();
+						controller.nuevoRango(rango);
+					} catch (Exception e2) {
+						// TODO: handle exception
+					}
+				}
+			}
+
+		
 			for (int i = 0; i < players.length; i++) {
-				try {
-					this.rango = this.rangopls[i].getText();
-					this.controller.nuevoRango(this.rango);
-				} catch (Exception e2) {
-					// TODO: handle exception
+				if(players[i] == e.getSource()) {
+					try {
+						if(pulsados[i] == false) {
+							players[i].setBackground(Color.GREEN);
+							players[i].setForeground(Color.BLACK);
+							pulsados[i] = true;
+						}
+						else {
+							pulsados[i] = false;
+							players[i].setBackground(Color.gray);
+							players[i].setForeground(Color.WHITE);
+						}
+					} catch (Exception e2) {
+						// TODO: handle exception
+					}
+					
 				}
 			}
+		
 		}
 
-		
-		for (int i = 0; i < players.length; i++) {
-			if(this.players[i] == e.getSource()) {
-				try {
-					if(this.pulsados[i] == false) {
-						this.players[i].setBackground(Color.GREEN);
-						this.players[i].setForeground(Color.BLACK);
-						this.pulsados[i] = true;
-					}
-					else {
-						this.pulsados[i] = false;
-						this.players[i].setBackground(Color.gray);
-						this.players[i].setForeground(Color.WHITE);
-					}
-				} catch (Exception e2) {
-					// TODO: handle exception
-				}
-				
-			}
-		}
-		
-		
-		
-		
-		
 	}
-
-
-
 
 
 	@Override

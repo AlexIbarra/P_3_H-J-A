@@ -9,6 +9,7 @@ public class ComboSuited implements Combos{
 	
 	
 	private ArrayList <Combo> combo = new ArrayList <Combo>();
+	private int contador;
 	
 	
 	public ComboSuited()
@@ -27,6 +28,7 @@ public class ComboSuited implements Combos{
 //			combo.add(new Combo (carta1, carta2)); 
 //		}
 		
+		this.contador = 4;
 		
 		combo.add(new Combo (new Carta (num1, 'h'), new Carta (num2, 'h')));
 		combo.add(new Combo (new Carta (num1, 'c'), new Carta (num2, 'c')));
@@ -48,8 +50,23 @@ public class ComboSuited implements Combos{
 		return combo;
 	}
 	
+	public Combo getCombo(int i) {
+		Combo combo;
+		
+		combo = this.combo.get(i);
+//		this.combo.remove(this.contador-1);
+//		this.contador--;
+		
+		return combo;
+	}
+	
 	
 	public String toString() {
 		return "ComboSuited";
+	}
+	@Override
+	public int size() {
+		// TODO Auto-generated method stub
+		return this.contador;
 	}
 }

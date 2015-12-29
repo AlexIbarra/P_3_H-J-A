@@ -22,7 +22,7 @@ public class ComparadorJugadas {
 		int draws;
 		
 		if(n>1)
-			burbuja(n);
+			burbuja(jugadores, n);
 		
 		String cadena = "";
 		for(int i=n-1; i >= 0; i--) { 
@@ -48,7 +48,7 @@ public class ComparadorJugadas {
 	
  
 
-	private static void burbuja(int n) {
+	public static void burbuja(ArrayList<Jugador> jugadores, int n) {
 		
 		Jugador jugtmp;
 		
