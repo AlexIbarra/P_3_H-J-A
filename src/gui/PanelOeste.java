@@ -116,7 +116,7 @@ public class PanelOeste extends JPanel implements RankingObserver {
 				rango.setBounds(104, tam, 170, 26);
 				
 				orPlayer = new JTextField();
-				orPlayer.setBounds(279, tam, 40, 25);
+				orPlayer.setBounds(279, tam, 45, 25);
 				orPlayer.setMargin(new Insets(1,1,1,1));
 			}
 			else {
@@ -136,7 +136,7 @@ public class PanelOeste extends JPanel implements RankingObserver {
 				rango.setBounds(104, tam, 170, 26);
 				
 				orPlayer = new JTextField();
-				orPlayer.setBounds(279, tam, 40, 25);
+				orPlayer.setBounds(279, tam, 45, 25);
 				orPlayer.setMargin(new Insets(1,1,1,1));
 				
 			}
@@ -267,6 +267,9 @@ public class PanelOeste extends JPanel implements RankingObserver {
 	
 	
 	private class OyenteBoton implements ActionListener {
+		
+		double eq1=0, eq2=0;
+		Font font = new Font("EQ", 9, 9);
 	
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -280,24 +283,31 @@ public class PanelOeste extends JPanel implements RankingObserver {
 				
 				out = "";	
 				
-				controller.generaCombinaciones();
 				
-				for (int i = 0; i < players.length; i++) {
+				/* Recojo el valor de la mano de cada uno de los jugadores */
+				for (int i = 0; i < 2; i++) {
 					
-					/* Si hay una mano en TextField del jugador */
-//					if (!rangopls[i].getText().equals("")) { 
-						manos.add(rangopls[i].getText());					
-//					}
-	
+					manos.add(rangopls[i].getText());					
 					rangopls[i].setText("");
 					players[i].setEnabled(true);
 					pulsados[i] = false;
 				}
 				
 				
-				/* Le paso la mano al parser para evalue el combo correspondiente */
-				controller.parseaCombo(manos);
+				/* Le paso cada una de esas menos al controlador para que genere combinaciones
+				 * aleatorias de manos con las que se evaluaran la de los jugadores */
+				controller.generaCombinaciones(manos, board.getText(), deads.getText());
 				
+				eq1 = controller.calcularEquity(0);
+				eq2 = controller.calcularEquity(1);
+				
+				tfEquity[0].setFont(font);
+				tfEquity[1].setFont(font);
+				
+				tfEquity[0].setText(String.format("%.2f", eq1) + "%");
+				tfEquity[1].setText(String.format("%.2f", eq2) + "%");
+				
+				/* Limpio el panel de cartas */
 				controller.cleanGrid();
 			}
 			else if(e.getSource() == calcularRanking) {

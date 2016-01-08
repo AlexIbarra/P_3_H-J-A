@@ -2,6 +2,7 @@ package jugadores;
 
 import java.util.ArrayList;
 
+import carta.Carta;
 import carta.Mano;
 import jugadas.Jugadas;
 import main.PilaManos;
@@ -10,6 +11,7 @@ public class Jugador {
 	
 	private Mano mano;
 	private Jugadas mejorJugada;
+	private String jugada;
 	private ArrayList<String> pilaManos;
 	private ArrayList<Jugadas> mejoresManos;
 	private int valor;
@@ -29,11 +31,46 @@ public class Jugador {
 		this.numJugador = n;
 		this.pilaManos = new ArrayList<String>();
 		this.mejoresManos = new ArrayList<Jugadas>();
+		this.jugada = new String();
 		this.contManos=0;
+		this.mano = new Mano();
 	}
 	
 	
 	// Metodos
+	
+	public void setJugada(String cad) {
+		this.jugada = cad;
+	}
+	
+	public String getJugada() {
+		return this.jugada;
+	}
+	
+	
+	public void parseJugada() {
+		
+		String[] array = jugada.split("");
+		String cadena = new String();
+		
+		mano.deleteMano();
+		
+		for (int i = 1; i < array.length-1; i+=2) {
+			
+			cadena += array[i];
+			cadena += array[i+1];
+			
+			char[] token = cadena.toCharArray();
+			
+			mano.setMano(new Carta(token[0], token[1]));
+			
+			cadena = "";
+			
+		}
+		
+		mano.ordenaMano(0, mano.getMano().size() -1);
+		
+	}
 	
 	
 	public void addMejorMano(Jugadas jugada) {

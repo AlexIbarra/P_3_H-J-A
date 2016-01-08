@@ -7,6 +7,7 @@ import carta.Combo;
 import carta.Mano;
 import combos.Combos;
 import combos.ParserCombos;
+import jugadas.Jugadas;
 import jugadores.ComparadorJugadas;
 import jugadores.Jugador;
 import main.ParserJugadas;
@@ -24,6 +25,7 @@ public class Controller {
 	
 	private ParserRangos pRangos;
 	private ParserRankings pRankings;
+	private ComparadorJugadas comJugadas;
 	private ParserJugadas pJugadas;
 	private ParserManos pManos;
 	private ParserCombos pCombos;
@@ -32,7 +34,8 @@ public class Controller {
 	private Ranking rankingActivo;
 	private RankingChubukov rChurukov;
 	private String rango;
-	
+	private double ganadosJ1;
+	private double ganadosJ2;
 	
 
 	public Controller() {
@@ -49,17 +52,224 @@ public class Controller {
 		this.rankings[3] = new RankingRock();
 		this.rankings[4] = new RankingTight();
 		this.rankingActivo = this.rankings[0]; // set Churukov default
+		this.comJugadas = new ComparadorJugadas();
+		this.ganadosJ1 = 0;
+		this.ganadosJ2 = 0;
 		
 	}
 	
+
 	
 	
-	
-	public void generaCombinaciones() {
+	/* Metodo que se encarga de generar de forma aleatoria las posibles manos
+	 * que habria sobre la mesa teninedo en cuenta las que tienen los jugadores */
+	public void generaCombinaciones(ArrayList <String> manos, String board, String dead) {
+
+		Combos combosJ1;
+		Combos combosJ2;
+		Combo comboJ1;
+		Combo comboJ2;
+		Carta carta;
+		boolean condicion, condicion2, condicion3;
+		ArrayList<Carta> cartasBoard = new ArrayList<Carta>();
+		ArrayList<Carta> cartasQuemadas= new ArrayList<Carta>();
+		int n=0, pos=0, k=0;
+		int pos1J1, pos2J1, pos1J2, pos2J2;
+		Mano manoAleatoria=null, manoJ1, manoJ2;
+		Jugador jug1, jug2;
+		ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
 		
-		for (int i = 0; i < 3; i++) {
-			this.pilaManos.addMano(this.pCombos.generaCombinaciones());
+		ganadosJ1=0;
+		ganadosJ2=0;
+	
+		
+		/* Inicializamos la baraja */
+		pCombos.rellenarBaraja();
+		
+		jug1 = new Jugador(0);
+		jug2 = new Jugador(1);
+		
+		jugadores.add(jug1);
+		jugadores.add(jug2);
+		
+		/* Si hay cartas en el board */
+		if(!board.equals("")) {
+			
+			String[] array = board.split(",");
+			n = array.length;
+			for (int i = 0; i < array.length; i++) {
+				char[] token = array[i].toCharArray();
+				carta = new Carta(token[0], token[1]);
+				cartasBoard.add(carta);
+				pos = pCombos.calculaPosicionparaBorrar(carta.getCodigo(), carta.getPalo());
+				pCombos.setUsada(pos, false);
+			}		
+			
 		}
+		
+		if(!dead.equals("")) {
+			String[] array = dead.split(",");
+			n = array.length;
+			for (int i = 0; i < array.length; i++) {
+				char[] token = array[i].toCharArray();
+				carta = new Carta(token[0], token[1]);
+				cartasQuemadas.add(carta);
+				pos = pCombos.calculaPosicionparaBorrar(carta.getCodigo(), carta.getPalo());
+				pCombos.setUsada(pos, false);
+			}	
+		}
+		
+		
+		
+		/* Primero eliminamos de la baraja las cartas que tienen los jugadores */
+//		for (int i = 0; i < manos.size(); i++) {
+			
+			combosJ1 = pCombos.parseaMano(manos.get(0));
+			combosJ2 = pCombos.parseaMano(manos.get(1));
+			
+			for (int j = 0; j < combosJ1.size(); j++) {
+				
+				/* Calculamos el combo del jugador en base al
+				 * string que nos pasen */
+				comboJ1 = combosJ1.getCombo(j);
+				
+				pos1J1 = pCombos.calculaPosicionparaBorrar(comboJ1.getCarta1().getCodigo(), comboJ1.getCarta1().getPalo());
+				pos2J1 = pCombos.calculaPosicionparaBorrar(comboJ1.getCarta2().getCodigo(), comboJ1.getCarta2().getPalo());
+				
+				pCombos.setUsada(pos1J1, false);
+				pCombos.setUsada(pos2J1, false);
+				
+				for (int i = 0; i < combosJ2.size(); i++) {				
+					
+						
+					
+					comboJ2 = combosJ2.getCombo(i);
+					
+					pos1J2 = pCombos.calculaPosicionparaBorrar(comboJ2.getCarta1().getCodigo(), comboJ2.getCarta1().getPalo());
+					pos2J2 = pCombos.calculaPosicionparaBorrar(comboJ2.getCarta2().getCodigo(), comboJ2.getCarta2().getPalo());
+					
+					pCombos.setUsada(pos1J2, false);
+					pCombos.setUsada(pos2J2, false);
+					
+					/* Comparar las cartas entre los combos */
+					condicion = false;
+					condicion = ((comboJ1.getCarta1().getCodigo() == comboJ2.getCarta1().getCodigo()) && (comboJ1.getCarta1().getPalo() == comboJ2.getCarta1().getPalo()))
+							|| ((comboJ1.getCarta1().getCodigo() == comboJ2.getCarta2().getCodigo()) && (comboJ1.getCarta1().getPalo() == comboJ2.getCarta2().getPalo()))
+							|| ((comboJ1.getCarta2().getCodigo() == comboJ2.getCarta1().getCodigo()) && (comboJ1.getCarta2().getPalo() == comboJ2.getCarta1().getPalo()))
+							|| ((comboJ1.getCarta2().getCodigo() == comboJ2.getCarta2().getCodigo()) && (comboJ1.getCarta2().getPalo() == comboJ2.getCarta2().getPalo()));
+					
+					
+					/* Comparamos las cartas quemadas con las de los combos */
+					k=0;
+					condicion2 = false;
+					while(k < cartasQuemadas.size() && !condicion2) {
+						
+						condicion2 = ((cartasQuemadas.get(k).getCodigo() == comboJ1.getCarta1().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ1.getCarta1().getPalo()))
+									|| ((cartasQuemadas.get(k).getCodigo() == comboJ1.getCarta2().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ1.getCarta2().getPalo()))
+									|| ((cartasQuemadas.get(k).getCodigo() == comboJ2.getCarta1().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ2.getCarta1().getPalo()))
+									|| ((cartasQuemadas.get(k).getCodigo() == comboJ2.getCarta2().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ2.getCarta2().getPalo()));
+						
+						k++;
+					}
+					
+					/* Comparamos las cartas del board con las de los combos */
+					k=0;
+					condicion3 = false;
+					while(k < cartasBoard.size() && !condicion3) {
+						
+						condicion3 = ((cartasBoard.get(k).getCodigo() == comboJ1.getCarta1().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ1.getCarta1().getPalo()))
+									|| ((cartasBoard.get(k).getCodigo() == comboJ1.getCarta2().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ1.getCarta2().getPalo()))
+									|| ((cartasBoard.get(k).getCodigo() == comboJ2.getCarta1().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ2.getCarta1().getPalo()))
+									|| ((cartasBoard.get(k).getCodigo() == comboJ2.getCarta2().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ2.getCarta2().getPalo()));
+						
+						k++;
+					}
+					
+					if(!condicion && !condicion2 && !condicion3) {
+					
+						for (k = 0; k < 40000; k++) {
+							/* Generar combinaciones aleatorias */
+							manoAleatoria = this.pCombos.generaCombinaciones(5-n);
+							
+							/* Añadimos las cartas del board */
+							if(cartasBoard.size() >= 1){
+								for (int x = 0; x < cartasBoard.size(); x++) {
+									manoAleatoria.setMano(cartasBoard.get(x));
+								}
+							}
+							
+							/* Generamos la mano para J1 */
+							manoAleatoria.setMano(comboJ1.getCarta1());
+							manoAleatoria.setMano(comboJ1.getCarta2());
+							
+							jug1.setJugada(manoAleatoria.toString());
+							
+							jug1.parseJugada();
+							
+							/* Eliminamos de la mano las cartas del J1 */
+							manoAleatoria.deleteCarta(comboJ1.getCarta1().toString());
+							manoAleatoria.deleteCarta(comboJ1.getCarta2().toString());
+							
+							/* Generamos la mano para J2 */
+							manoAleatoria.setMano(comboJ2.getCarta1());
+							manoAleatoria.setMano(comboJ2.getCarta2());
+							
+							jug2.setJugada(manoAleatoria.toString());
+							
+							jug2.parseJugada();
+							
+							/* Eliminamos de la mano las cartas del J2 */
+							manoAleatoria.deleteCarta(comboJ2.getCarta1().toString());
+							manoAleatoria.deleteCarta(comboJ2.getCarta2().toString());
+							
+							
+							/* Calculamos las mejores jugadas de cada jugador */
+							jug1.setMejorJugada(this.pJugadas.parse(jug1.getMano()));
+							jug2.setMejorJugada(this.pJugadas.parse(jug2.getMano()));
+							
+							
+							/* Ordenamos los jugadores de mejor a peor jugada */
+							this.comJugadas.burbuja(jugadores, 2);
+							
+							/* Si ha ganado el jugador 1 */
+							if(jugadores.get(0).getNumJugador() == 1) {
+								this.ganadosJ1++;
+							}
+							else {
+								this.ganadosJ2++;
+							}
+							
+							
+						}
+					}
+					
+					
+					pCombos.setUsada(pos1J2, true);
+					pCombos.setUsada(pos2J2, true);
+							
+				}
+				
+				pCombos.setUsada(pos1J1, true);
+				pCombos.setUsada(pos2J1, true);
+			}	
+//		}
+		
+		System.out.println("Ganador 1: " + ganadosJ1);
+		System.out.println("Ganador 2: " + ganadosJ2);
+		double m = ganadosJ1+ganadosJ2;
+		System.out.println("Manos calculadas: " + m);
+			
+	}
+	
+	
+	public double calcularEquity(int n) {
+		
+		if(n == 0) {
+			return (ganadosJ1/(ganadosJ1+ganadosJ2))*100;
+		}
+		else
+			return (ganadosJ2/(ganadosJ1+ganadosJ2))*100;
+		
 	}
 	
 	

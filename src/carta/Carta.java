@@ -21,6 +21,7 @@ public class Carta {
 		this.usada = false;
 		this.kicker = -1;
 	}
+	
 	public Carta (char num){
 		this.numero = num;
 		this.valores = new HashMap<Character, Integer>();

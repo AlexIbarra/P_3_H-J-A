@@ -67,6 +67,13 @@ public class Mano {
 	}
 	
 	
+	public void deleteMano() {
+		int n = mano.size();
+		for (int i = n-1; i >= 0; i--) {
+			this.mano.remove(i);
+		}
+	}
+	
 	private void setHashMap() {
 		this.valores.put(new Integer(14), new String("As"));
 		this.valores.put(new Integer(13), new String("Rey"));
