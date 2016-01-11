@@ -208,17 +208,20 @@ public class Controller {
 					condicion4 = false;
 					while(k < cartasQuemadas.size() && !condicion2 && !condicion4) {
 						
+						/* Ninguna de las manos son random */
 						if(!manos.get(0).equalsIgnoreCase("random") && !manos.get(1).equalsIgnoreCase("random")){
 							condicion2 = ((cartasQuemadas.get(k).getCodigo() == comboJ1.getCarta1().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ1.getCarta1().getPalo()))
 									|| ((cartasQuemadas.get(k).getCodigo() == comboJ1.getCarta2().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ1.getCarta2().getPalo()))
 									|| ((cartasQuemadas.get(k).getCodigo() == comboJ2.getCarta1().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ2.getCarta1().getPalo()))
 									|| ((cartasQuemadas.get(k).getCodigo() == comboJ2.getCarta2().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ2.getCarta2().getPalo()));
 						}
-						else if(manos.get(1).equalsIgnoreCase("random")){
+						/* Mano 2 es random pero mano 1 no */
+						else if(manos.get(1).equalsIgnoreCase("random") && !manos.get(0).equalsIgnoreCase("random")){
 							condicion4 = ((cartasQuemadas.get(k).getCodigo() == comboJ1.getCarta1().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ1.getCarta1().getPalo()))
 									|| ((cartasQuemadas.get(k).getCodigo() == comboJ1.getCarta2().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ1.getCarta2().getPalo())); 
 						}
-						else if(manos.get(1).equalsIgnoreCase("random")) {
+						/* Mano 1 es random pero mano 2 no */
+						else if(manos.get(0).equalsIgnoreCase("random") && !manos.get(1).equalsIgnoreCase("random")) {
 							condicion2 = ((cartasQuemadas.get(k).getCodigo() == comboJ2.getCarta1().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ2.getCarta1().getPalo()))
 									|| ((cartasQuemadas.get(k).getCodigo() == comboJ2.getCarta2().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ2.getCarta2().getPalo()));
 						}
@@ -231,17 +234,20 @@ public class Controller {
 					condicion5 = false;
 					while(k < cartasBoard.size() && !condicion3) {
 						
+						/* Ninguna de las manos son random */
 						if(!manos.get(0).equalsIgnoreCase("random") && !manos.get(1).equalsIgnoreCase("random")){
 							condicion3 = ((cartasBoard.get(k).getCodigo() == comboJ1.getCarta1().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ1.getCarta1().getPalo()))
 										|| ((cartasBoard.get(k).getCodigo() == comboJ1.getCarta2().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ1.getCarta2().getPalo()))
 										|| ((cartasBoard.get(k).getCodigo() == comboJ2.getCarta1().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ2.getCarta1().getPalo()))
 										|| ((cartasBoard.get(k).getCodigo() == comboJ2.getCarta2().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ2.getCarta2().getPalo()));
 						}
-						else if(manos.get(1).equalsIgnoreCase("random")){
+						/* Mano 1 es random pero mano 2 no*/
+						else if(manos.get(0).equalsIgnoreCase("random") && !manos.get(1).equalsIgnoreCase("random")){
 							condicion5 = ((cartasBoard.get(k).getCodigo() == comboJ2.getCarta1().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ2.getCarta1().getPalo()))
 									|| ((cartasBoard.get(k).getCodigo() == comboJ2.getCarta2().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ2.getCarta2().getPalo()));
 						}
-						else if(manos.get(0).equalsIgnoreCase("random")){
+						/* Mano 2 es random pero mano 1 no */
+						else if(manos.get(1).equalsIgnoreCase("random") && !manos.get(0).equalsIgnoreCase("random")){
 							condicion3 = ((cartasBoard.get(k).getCodigo() == comboJ1.getCarta1().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ1.getCarta1().getPalo()))
 									|| ((cartasBoard.get(k).getCodigo() == comboJ1.getCarta2().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ1.getCarta2().getPalo()));
 						}
@@ -251,7 +257,7 @@ public class Controller {
 					
 					if(!condicion && !condicion2 && !condicion3 && !condicion4 && !condicion5) {
 					
-						for (k = 0; k < 1000000; k++) {
+						for (k = 0; k < 7000; k++) {
 							/* Generar combinaciones aleatorias */
 							manoAleatoria = this.pCombos.generaCombinaciones(5-n);
 							
