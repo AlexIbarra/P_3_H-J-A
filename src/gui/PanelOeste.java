@@ -258,7 +258,7 @@ public class PanelOeste extends JPanel implements RankingObserver {
 		sur.add(vacio, BorderLayout.CENTER);
 		this.add(sur);
 		
-		
+		this.controller.setPanel(this.salida);
 		
 		this.controller.addRankingObserver(this);
 		
@@ -405,6 +405,21 @@ public class PanelOeste extends JPanel implements RankingObserver {
 				this.rangopls[j].setText(cad.toString());
 			}
 		}
+	}
+
+
+
+
+
+	@Override
+	public void muestraResultados(double ganadosJ1, double ganadosJ2) {
+		// TODO Auto-generated method stub
+		this.out += "Veces que gana Player 1: " + ganadosJ1 + "\n";
+		this.out += "Veces que gana Player 1: " + ganadosJ2 + "\n";
+		double total = ganadosJ1 + ganadosJ2;
+		this.out += "Numero de manos generadas: " + total + "\n";
+
+		this.salida.setText(out);
 	}
 
 }

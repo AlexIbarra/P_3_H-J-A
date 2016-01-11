@@ -383,6 +383,13 @@ public class PanelGrid extends JPanel implements ActionListener, RangoObserver, 
 		// TODO Auto-generated method stub
 		
 	}
+
+
+	@Override
+	public void muestraResultados(double ganadosJ1, double ganadosJ2) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 	

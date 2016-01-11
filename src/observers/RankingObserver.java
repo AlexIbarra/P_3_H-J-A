@@ -13,5 +13,9 @@ public interface RankingObserver {
 	public void jugadaEvaluada(String[] salida, boolean res);
 	
 	public void haySeleccionado(Vector<String> select);
+	
+
+
+	public void muestraResultados(double ganadosJ1, double ganadosJ2);
 
 }

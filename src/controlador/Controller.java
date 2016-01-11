@@ -1,6 +1,10 @@
 package controlador;
 
+import gui.PanelOeste;
+
 import java.util.ArrayList;
+
+import javax.swing.JTextArea;
 
 import carta.Carta;
 import carta.Combo;
@@ -36,6 +40,7 @@ public class Controller {
 	private String rango;
 	private double ganadosJ1;
 	private double ganadosJ2;
+	private JTextArea panel;
 	
 
 	public Controller() {
@@ -61,21 +66,42 @@ public class Controller {
 
 	
 	
+	public JTextArea getPanel() {
+		return panel;
+	}
+
+
+
+
+	public void setPanel(JTextArea panel) {
+		this.panel = panel;
+	}
+	
+	public void setTextPanel(String cadena){
+		this.panel.setText(cadena);
+	}
+
+
+
+
 	/* Metodo que se encarga de generar de forma aleatoria las posibles manos
 	 * que habria sobre la mesa teninedo en cuenta las que tienen los jugadores */
 	public void generaCombinaciones(ArrayList <String> manos, String board, String dead) {
 
-		Combos combosJ1;
-		Combos combosJ2;
-		Combo comboJ1;
-		Combo comboJ2;
+		long time_start, time_end;
+		time_start = System.currentTimeMillis();
+		Combos combosJ1=null;
+		Combos combosJ2=null;
+		Combo comboJ1=null;
+		Combo comboJ2=null;
 		Carta carta;
-		boolean condicion, condicion2, condicion3;
+		boolean condicion, condicion2, condicion3, condicion4, condicion5;
 		ArrayList<Carta> cartasBoard = new ArrayList<Carta>();
 		ArrayList<Carta> cartasQuemadas= new ArrayList<Carta>();
 		int n=0, pos=0, k=0;
-		int pos1J1, pos2J1, pos1J2, pos2J2;
+		int pos1J1=0, pos2J1=0, pos1J2=0, pos2J2=0;
 		Mano manoAleatoria=null, manoJ1, manoJ2;
+		Mano mAleatoriaJ1, mAleatoriaJ2;
 		Jugador jug1, jug2;
 		ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
 		
@@ -123,71 +149,109 @@ public class Controller {
 		
 		/* Primero eliminamos de la baraja las cartas que tienen los jugadores */
 //		for (int i = 0; i < manos.size(); i++) {
+			int vueltas=0, vueltas2=0;
+			if(manos.get(0).equalsIgnoreCase("random")){
+				vueltas = 1;
+			}
+			else {
+				combosJ1 = pCombos.parseaMano(manos.get(0));
+				vueltas = combosJ1.size();
+			}
 			
-			combosJ1 = pCombos.parseaMano(manos.get(0));
-			combosJ2 = pCombos.parseaMano(manos.get(1));
+			if(manos.get(1).equalsIgnoreCase("random")){
+				vueltas2 = 1;
+			}
+			else {
+				combosJ2 = pCombos.parseaMano(manos.get(1));
+				vueltas2 = combosJ2.size();
+			}
 			
-			for (int j = 0; j < combosJ1.size(); j++) {
+			for (int j = 0; j < vueltas; j++) {
 				
 				/* Calculamos el combo del jugador en base al
 				 * string que nos pasen */
-				comboJ1 = combosJ1.getCombo(j);
+				if(!manos.get(0).equalsIgnoreCase("random")){
+					comboJ1 = combosJ1.getCombo(j);
+					
+					pos1J1 = pCombos.calculaPosicionparaBorrar(comboJ1.getCarta1().getCodigo(), comboJ1.getCarta1().getPalo());
+					pos2J1 = pCombos.calculaPosicionparaBorrar(comboJ1.getCarta2().getCodigo(), comboJ1.getCarta2().getPalo());
+					
+					pCombos.setUsada(pos1J1, false);
+					pCombos.setUsada(pos2J1, false);
+				}
 				
-				pos1J1 = pCombos.calculaPosicionparaBorrar(comboJ1.getCarta1().getCodigo(), comboJ1.getCarta1().getPalo());
-				pos2J1 = pCombos.calculaPosicionparaBorrar(comboJ1.getCarta2().getCodigo(), comboJ1.getCarta2().getPalo());
-				
-				pCombos.setUsada(pos1J1, false);
-				pCombos.setUsada(pos2J1, false);
-				
-				for (int i = 0; i < combosJ2.size(); i++) {				
+				for (int i = 0; i < vueltas2; i++) {				
 					
 						
-					
-					comboJ2 = combosJ2.getCombo(i);
-					
-					pos1J2 = pCombos.calculaPosicionparaBorrar(comboJ2.getCarta1().getCodigo(), comboJ2.getCarta1().getPalo());
-					pos2J2 = pCombos.calculaPosicionparaBorrar(comboJ2.getCarta2().getCodigo(), comboJ2.getCarta2().getPalo());
-					
-					pCombos.setUsada(pos1J2, false);
-					pCombos.setUsada(pos2J2, false);
+					if(!manos.get(1).equalsIgnoreCase("random")){
+						comboJ2 = combosJ2.getCombo(i);
+						
+						pos1J2 = pCombos.calculaPosicionparaBorrar(comboJ2.getCarta1().getCodigo(), comboJ2.getCarta1().getPalo());
+						pos2J2 = pCombos.calculaPosicionparaBorrar(comboJ2.getCarta2().getCodigo(), comboJ2.getCarta2().getPalo());
+						
+						pCombos.setUsada(pos1J2, false);
+						pCombos.setUsada(pos2J2, false);
+					}
 					
 					/* Comparar las cartas entre los combos */
 					condicion = false;
-					condicion = ((comboJ1.getCarta1().getCodigo() == comboJ2.getCarta1().getCodigo()) && (comboJ1.getCarta1().getPalo() == comboJ2.getCarta1().getPalo()))
-							|| ((comboJ1.getCarta1().getCodigo() == comboJ2.getCarta2().getCodigo()) && (comboJ1.getCarta1().getPalo() == comboJ2.getCarta2().getPalo()))
-							|| ((comboJ1.getCarta2().getCodigo() == comboJ2.getCarta1().getCodigo()) && (comboJ1.getCarta2().getPalo() == comboJ2.getCarta1().getPalo()))
-							|| ((comboJ1.getCarta2().getCodigo() == comboJ2.getCarta2().getCodigo()) && (comboJ1.getCarta2().getPalo() == comboJ2.getCarta2().getPalo()));
-					
+					if(!manos.get(0).equalsIgnoreCase("random") && !manos.get(1).equalsIgnoreCase("random")){
+						condicion = ((comboJ1.getCarta1().getCodigo() == comboJ2.getCarta1().getCodigo()) && (comboJ1.getCarta1().getPalo() == comboJ2.getCarta1().getPalo()))
+								|| ((comboJ1.getCarta1().getCodigo() == comboJ2.getCarta2().getCodigo()) && (comboJ1.getCarta1().getPalo() == comboJ2.getCarta2().getPalo()))
+								|| ((comboJ1.getCarta2().getCodigo() == comboJ2.getCarta1().getCodigo()) && (comboJ1.getCarta2().getPalo() == comboJ2.getCarta1().getPalo()))
+								|| ((comboJ1.getCarta2().getCodigo() == comboJ2.getCarta2().getCodigo()) && (comboJ1.getCarta2().getPalo() == comboJ2.getCarta2().getPalo()));
+					}
 					
 					/* Comparamos las cartas quemadas con las de los combos */
 					k=0;
 					condicion2 = false;
-					while(k < cartasQuemadas.size() && !condicion2) {
+					condicion4 = false;
+					while(k < cartasQuemadas.size() && !condicion2 && !condicion4) {
 						
-						condicion2 = ((cartasQuemadas.get(k).getCodigo() == comboJ1.getCarta1().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ1.getCarta1().getPalo()))
+						if(!manos.get(0).equalsIgnoreCase("random") && !manos.get(1).equalsIgnoreCase("random")){
+							condicion2 = ((cartasQuemadas.get(k).getCodigo() == comboJ1.getCarta1().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ1.getCarta1().getPalo()))
 									|| ((cartasQuemadas.get(k).getCodigo() == comboJ1.getCarta2().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ1.getCarta2().getPalo()))
 									|| ((cartasQuemadas.get(k).getCodigo() == comboJ2.getCarta1().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ2.getCarta1().getPalo()))
 									|| ((cartasQuemadas.get(k).getCodigo() == comboJ2.getCarta2().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ2.getCarta2().getPalo()));
-						
+						}
+						else if(manos.get(1).equalsIgnoreCase("random")){
+							condicion4 = ((cartasQuemadas.get(k).getCodigo() == comboJ1.getCarta1().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ1.getCarta1().getPalo()))
+									|| ((cartasQuemadas.get(k).getCodigo() == comboJ1.getCarta2().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ1.getCarta2().getPalo())); 
+						}
+						else if(manos.get(1).equalsIgnoreCase("random")) {
+							condicion2 = ((cartasQuemadas.get(k).getCodigo() == comboJ2.getCarta1().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ2.getCarta1().getPalo()))
+									|| ((cartasQuemadas.get(k).getCodigo() == comboJ2.getCarta2().getCodigo()) && (cartasQuemadas.get(k).getPalo() == comboJ2.getCarta2().getPalo()));
+						}
 						k++;
 					}
 					
 					/* Comparamos las cartas del board con las de los combos */
 					k=0;
 					condicion3 = false;
+					condicion5 = false;
 					while(k < cartasBoard.size() && !condicion3) {
 						
-						condicion3 = ((cartasBoard.get(k).getCodigo() == comboJ1.getCarta1().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ1.getCarta1().getPalo()))
-									|| ((cartasBoard.get(k).getCodigo() == comboJ1.getCarta2().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ1.getCarta2().getPalo()))
-									|| ((cartasBoard.get(k).getCodigo() == comboJ2.getCarta1().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ2.getCarta1().getPalo()))
+						if(!manos.get(0).equalsIgnoreCase("random") && !manos.get(1).equalsIgnoreCase("random")){
+							condicion3 = ((cartasBoard.get(k).getCodigo() == comboJ1.getCarta1().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ1.getCarta1().getPalo()))
+										|| ((cartasBoard.get(k).getCodigo() == comboJ1.getCarta2().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ1.getCarta2().getPalo()))
+										|| ((cartasBoard.get(k).getCodigo() == comboJ2.getCarta1().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ2.getCarta1().getPalo()))
+										|| ((cartasBoard.get(k).getCodigo() == comboJ2.getCarta2().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ2.getCarta2().getPalo()));
+						}
+						else if(manos.get(1).equalsIgnoreCase("random")){
+							condicion5 = ((cartasBoard.get(k).getCodigo() == comboJ2.getCarta1().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ2.getCarta1().getPalo()))
 									|| ((cartasBoard.get(k).getCodigo() == comboJ2.getCarta2().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ2.getCarta2().getPalo()));
+						}
+						else if(manos.get(0).equalsIgnoreCase("random")){
+							condicion3 = ((cartasBoard.get(k).getCodigo() == comboJ1.getCarta1().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ1.getCarta1().getPalo()))
+									|| ((cartasBoard.get(k).getCodigo() == comboJ1.getCarta2().getCodigo()) && (cartasBoard.get(k).getPalo() == comboJ1.getCarta2().getPalo()));
+						}
 						
 						k++;
 					}
 					
-					if(!condicion && !condicion2 && !condicion3) {
+					if(!condicion && !condicion2 && !condicion3 && !condicion4 && !condicion5) {
 					
-						for (k = 0; k < 40000; k++) {
+						for (k = 0; k < 1000000; k++) {
 							/* Generar combinaciones aleatorias */
 							manoAleatoria = this.pCombos.generaCombinaciones(5-n);
 							
@@ -199,29 +263,44 @@ public class Controller {
 							}
 							
 							/* Generamos la mano para J1 */
-							manoAleatoria.setMano(comboJ1.getCarta1());
-							manoAleatoria.setMano(comboJ1.getCarta2());
+							// si el string es random hay que generar 7-n cartaspara este jugador
+							if(manos.get(0).equalsIgnoreCase("random")) {
+								mAleatoriaJ1 = this.pCombos.generaCombinaciones(7-n);
+								jug1.setJugada(mAleatoriaJ1.toString());
+								jug1.parseJugada();
+							}
+							else{
+								manoAleatoria.setMano(comboJ1.getCarta1());
+								manoAleatoria.setMano(comboJ1.getCarta2());
+								
+								jug1.setJugada(manoAleatoria.toString());
+								
+								jug1.parseJugada();
+								
+								/* Eliminamos de la mano las cartas del J1 */
+								manoAleatoria.deleteCarta(comboJ1.getCarta1().toString());
+								manoAleatoria.deleteCarta(comboJ1.getCarta2().toString());
+							}
 							
-							jug1.setJugada(manoAleatoria.toString());
-							
-							jug1.parseJugada();
-							
-							/* Eliminamos de la mano las cartas del J1 */
-							manoAleatoria.deleteCarta(comboJ1.getCarta1().toString());
-							manoAleatoria.deleteCarta(comboJ1.getCarta2().toString());
 							
 							/* Generamos la mano para J2 */
-							manoAleatoria.setMano(comboJ2.getCarta1());
-							manoAleatoria.setMano(comboJ2.getCarta2());
-							
-							jug2.setJugada(manoAleatoria.toString());
-							
-							jug2.parseJugada();
-							
-							/* Eliminamos de la mano las cartas del J2 */
-							manoAleatoria.deleteCarta(comboJ2.getCarta1().toString());
-							manoAleatoria.deleteCarta(comboJ2.getCarta2().toString());
-							
+							if(manos.get(1).equalsIgnoreCase("random")) {
+								mAleatoriaJ2 = this.pCombos.generaCombinaciones(7-n);
+								jug2.setJugada(mAleatoriaJ2.toString());
+								jug2.parseJugada();
+							}
+							else{
+								manoAleatoria.setMano(comboJ2.getCarta1());
+								manoAleatoria.setMano(comboJ2.getCarta2());
+								
+								jug2.setJugada(manoAleatoria.toString());
+								
+								jug2.parseJugada();
+								
+								/* Eliminamos de la mano las cartas del J2 */
+								manoAleatoria.deleteCarta(comboJ2.getCarta1().toString());
+								manoAleatoria.deleteCarta(comboJ2.getCarta2().toString());
+							}
 							
 							/* Calculamos las mejores jugadas de cada jugador */
 							jug1.setMejorJugada(this.pJugadas.parse(jug1.getMano()));
@@ -243,22 +322,51 @@ public class Controller {
 						}
 					}
 					
-					
-					pCombos.setUsada(pos1J2, true);
-					pCombos.setUsada(pos2J2, true);
+					if(!manos.get(1).equalsIgnoreCase("random")){
+						pCombos.setUsada(pos1J2, true);
+						pCombos.setUsada(pos2J2, true);
+					}
 							
 				}
-				
-				pCombos.setUsada(pos1J1, true);
-				pCombos.setUsada(pos2J1, true);
+				if(!manos.get(0).equalsIgnoreCase("random")){
+					pCombos.setUsada(pos1J1, true);
+					pCombos.setUsada(pos2J1, true);
+				}
 			}	
 //		}
 		
 		System.out.println("Ganador 1: " + ganadosJ1);
 		System.out.println("Ganador 2: " + ganadosJ2);
 		double m = ganadosJ1+ganadosJ2;
+		time_end = System.currentTimeMillis();
+		System.out.println("Tiempo transcurrido: "+ ( time_end - time_start ) +" milisegundos");
 		System.out.println("Manos calculadas: " + m);
-			
+		StringBuilder cad = new StringBuilder();
+		cad.append("Manos ganadas del J1: ");
+		cad.append(Double.toString(ganadosJ1));
+		cad.append("\n");
+		cad.append("Manos ganadas del J2: ");
+		cad.append(Double.toString(ganadosJ2));
+		cad.append("\n");
+		cad.append("Manos totales generadas: ");
+		cad.append(Double.toString(m));
+		cad.append("\n");
+		cad.append("Tiempo transcurrido: ");
+		long time = time_end -time_start;
+		cad.append(Long.toString(time));
+		cad.append(" milisegundos");
+		cad.append("\n");
+		
+		
+		
+		
+		
+		//cad += "Ganador 1: " + ganadosJ1 + "\n";
+		//cad += "Ganador 2: " + ganadosJ2 + "\n";
+		//cad += "Manos calculadas: " + m + "\n";
+		//panel.muestraResultados(ganadosJ1, ganadosJ2);
+		setTextPanel("");
+		setTextPanel(cad.toString());
 	}
 	
 	

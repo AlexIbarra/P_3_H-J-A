@@ -20,6 +20,7 @@ public class ParserJugadas {
 	private int Trio;
 	private int[] codigo;
 	private char[] palo;
+	
 	private Mano mano5;
 	private int posTrio;
 	private int posPareja;
